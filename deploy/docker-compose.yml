@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  db:
+    platform: linux/x86_64
+    image: mysql:latest
+    expose:
+      - 3306
+    ports:
+      - '127.0.0.1:3306:3306'
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: todoroot
+      MYSQL_DATABASE: todo
+      MYSQL_USER: todo
+      MYSQL_PASSWORD: todo
+    networks:
+      - todo-spring
+
+
+  javadocker:
+    container_name: javadocker
+    links:
+      - "db:db"
+    environment:
+        SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/todo?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=falsePublicKeyRetrieval=true&allowPublicKeyRetrieval=true
+        SPRING_DATASOURCE_USERNAME: todo
+        SPRING_DATASOURCE_PASSWORD: todo
+    depends_on:
+      - db
+    image: echo2eg/spring-docker-todo:1.3
+    expose:
+      - "8080"
+    ports:
+        - '127.0.0.1:8080:8080'
+    networks:
+      - todo-spring
+
+
+
+
+
+
+
+networks:
+  todo-spring:
+
+volumes:
+  db_data:
